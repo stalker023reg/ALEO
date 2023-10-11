@@ -1,0 +1,50 @@
+program text_based_game.aleo {
+
+    mapping story: address => string[2]; // Mapping to store story texts
+
+    struct player {
+        current_story_node: address;
+    }
+
+    transition start_game() -> string {
+        // Initialize the game with the first story node
+        player_storage.current_story_node = 0x1;
+        Mapping::set(story, 0x1, ["Welcome to the Text-Based Adventure!", "You find yourself in a mysterious forest. You see two paths, one to the left and one to the right. Which path do you choose?"]);
+        Mapping::set(story, 0x2, ["Left Path", "You chose the left path. You encounter a friendly squirrel. What do you want to do?"]);
+        Mapping::set(story, 0x3, ["Right Path", "You chose the right path. You find a hidden treasure chest. What do you want to do?"]);
+        return Mapping::get(story, player_storage.current_story_node)[1];
+    }
+
+    transition make_choice(public choice: string) -> string {
+        let current_text: string[2] = Mapping::get(story, player_storage.current_story_node);
+
+        if (player_storage.current_story_node == 0x1) {
+            // Player is at the starting point
+            if (choice == "left") {
+                player_storage.current_story_node = 0x2;
+            } else if (choice == "right") {
+                player_storage.current_story_node = 0x3;
+            } else {
+                return "Invalid choice. Please choose 'left' or 'right'.";
+            }
+        } else if (player_storage.current_story_node == 0x2) {
+            // Player is at the left path
+            if (choice == "talk") {
+                // Player talks to the squirrel
+                return "The squirrel smiles and gives you a magical acorn. You gain a special power!";
+            } else {
+                return "Invalid choice. You can only 'talk' to the squirrel.";
+            }
+        } else if (player_storage.current_story_node == 0x3) {
+            // Player is at the right path
+            if (choice == "open") {
+                // Player opens the treasure chest
+                return "Congratulations! You found a bag of gold coins!";
+            } else {
+                return "Invalid choice. You can only 'open' the treasure chest.";
+            }
+        }
+
+        return Mapping::get(story, player_storage.current_story_node)[1];
+    }
+}
