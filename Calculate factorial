@@ -1,0 +1,19 @@
+program factorial.aleo {
+
+    transition calculate_factorial(public number: u64) -> u64 {
+        if (number == 0u64) {
+            // Factorial of 0 is 1
+            return 1u64;
+        } else {
+            // Recursively calculate factorial of the number
+            let smaller_factorial: u64 = calculate_factorial(number - 1u64);
+            return number * smaller_factorial;
+        }
+    }
+
+    // Example usage of the function to calculate factorial of 5
+    transition main() -> u64 {
+        let result: u64 = calculate_factorial(5u64);
+        return result;
+    }
+}
